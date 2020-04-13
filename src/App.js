@@ -5,13 +5,16 @@ import 'moment';
 import moment from 'moment';
 import Chart from 'react-apexcharts'
 import interpolate from 'color-interpolate'
-import PullToRefresh from 'pulltorefreshjs';
+import jQuery from 'jquery';
+const $ = jQuery;
+
 class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = { 
       entries: [],
       range:'today',
+      currentScroll:0,
       currentUsage:'',
       todayUsage:'',
       options: {
@@ -38,13 +41,16 @@ class App extends React.Component {
       this.getEntries();
   }
   componentDidMount(){
-    const ptr = PullToRefresh.init({
-      mainElement: 'body',
-      onRefresh:()=> {
+    $(window).on('scroll', (e)=>{
+      this.setState({currentScroll:window.scrollY})
+    })
+    $(window).on('touchend', (e)=>{
+      this.setState({currentScroll:window.scrollY})
+      if(this.state.currentScroll<-65){
+        
         window.location.reload();
       }
-    });
-   
+    })
   }
   getEntries() {
     fetch("http://"+window.location.hostname+":3901/api/all?timestamp="+ moment().valueOf())
@@ -179,6 +185,9 @@ class App extends React.Component {
   render(){
     return (
       <div className="App">
+        <div className="ptr-status">
+          Pull to reload
+        </div>
         <div className="app-inner">
 
           

@@ -1,5 +1,17 @@
 @import "../node_modules/reset-css/sass/reset";
 $blue:#008ffb;
+.App{
+  transform: translateY(-65px);
+}
+.ptr-status{
+  height: 60px;
+  background-color: #fff;
+  border-radius: 25px;
+  margin-bottom: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 body{
   font-family: Helvetica, "Helvetica Neue", sans-serif;
   
@@ -62,6 +74,7 @@ body{
     font-weight: bold;
     border-bottom:3px solid $blue;
 }
+
 @media (max-width:600px){
   .header{
     display: block;
@@ -100,5 +113,14 @@ body{
   .nav-item{
     margin-left: 0.75em;
     margin-right: 0.75em;
+  }
+  body{
+    font-family: Helvetica, "Helvetica Neue", sans-serif;
+    background-color: #000;
+  }
+  .app-inner{
+    padding:5%;
+    background-color: #fff;
+    border-radius: 25px;
   }
 }

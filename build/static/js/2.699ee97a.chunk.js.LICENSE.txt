@@ -5,15 +5,34 @@ object-assign
 */
 
 /*!
+   * Sizzle CSS Selector Engine v2.3.5
+   * https://sizzlejs.com/
+   *
+   * Copyright JS Foundation and other contributors
+   * Released under the MIT license
+   * https://js.foundation/
+   *
+   * Date: 2020-03-14
+   */
+
+/*!
  * ApexCharts v3.18.1
  * (c) 2018-2020 Juned Chhipa
  * Released under the MIT License.
  */
 
 /*!
- * pulltorefreshjs v0.1.20
- * (c) Rafael Soto
- * Released under the MIT License.
+ * jQuery JavaScript Library v3.5.0
+ * https://jquery.com/
+ *
+ * Includes Sizzle.js
+ * https://sizzlejs.com/
+ *
+ * Copyright JS Foundation and other contributors
+ * Released under the MIT license
+ * https://jquery.org/license
+ *
+ * Date: 2020-04-10T15:07Z
  */
 
 /*! svg.draggable.js - v2.2.2 - 2019-01-08

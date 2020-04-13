@@ -17,6 +17,7 @@
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "forever": "^1.0.0",
+    "jquery": "^3.5.0",
     "lodash": "^4.17.15",
     "lowdb": "^1.0.0",
     "mobile-pull-to-refresh": "^0.2.2",
