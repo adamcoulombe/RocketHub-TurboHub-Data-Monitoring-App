@@ -7,7 +7,7 @@ This app is a work in progress. I built it for my own necessity, but I think the
 ### Why
 The ZTE MFR275R has an admin console accessible via web browser that is able to display some basic data usage statistics. Unfortunately it is very limited and doesn't contain historical usage data. It is also not coordinated in any way with billing dates/reset periods from your ISP which makes it very inconvenient to use and difficult to accurately interpret.
 
-### Requirements/Dependancies
+### Requirements/Dependencies
 - A computer with LAN access to your MFR275x
 - node.js
 
@@ -19,7 +19,7 @@ When you first run the script, you will need to also log in to your MFR275R usin
 The script will log data usage over time and allow you to view charts and information about your daily data usage and how much data you have remaining in your current billing period.
 
 ## Getting started
-To use this app, you will need to clone this repo and install its dependancies.
+To use this app, you will need to clone this repo and install its dependencies.
 `npm install`
 
 Then run the app
