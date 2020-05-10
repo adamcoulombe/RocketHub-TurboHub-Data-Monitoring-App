@@ -7,16 +7,16 @@ This app is a work in progress. I built it for my own necessity, but I think the
 ### Why
 The ZTE MFR275R has an admin console accessible via web browser that is able to display some basic data usage statistics. Unfortunately it is very limited and doesn't contain historical usage data. It is also not coordinated in any way with billing dates/reset periods from your ISP which makes it very inconvenient to use and difficult to accurately interpret.
 
+### Requirements/Dependancies
+- A computer with LAN access to your MFR275x
+- node.js
+
 ### How it works
 This app/script is built to run on a computer that can access the MFR275 admin panel over LAN. In other words, you need to be able to access the admin panel from the web browser of the computer that you will be running this script on.
 
 When you first run the script, you will need to also log in to your MFR275R using your web browser, so that you can authenticate.
 
 The script will log data usage over time and allow you to view charts and information about your daily data usage and how much data you have remaining in your current billing period.
-
-### Requirements/Dependancies
-- A computer with LAN access to your MFR275x
-- node.js
 
 ## Getting started
 To use this app, you will need to clone this repo and install its dependancies.
@@ -28,6 +28,8 @@ Then run the app
 Note that you will need to authenticate into your MFR275r from your web browser in order for the script to access usage information. You can do this by opening a web browser and logging in at the IP of your router through its web interface. You will stay authenticated as long as the app keeps running.
 
 You then see your data use statistics from a web browser or device on the same lan. By default, the app runs on port 3901
+
+## Screenshot
 ![Screenshot of Rocket Hub Turbo Hub Data Monitoring App](https://i.ibb.co/3FT1Gq6/image.png)
 
 
