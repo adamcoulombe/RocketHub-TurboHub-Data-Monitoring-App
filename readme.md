@@ -19,7 +19,7 @@ When you first run the script, you will need to also log in to your MFR275R usin
 The script will log data usage over time and allow you to view charts and information about your daily data usage and how much data you have remaining in your current billing period.
 
 ## Getting started
-To use this app, you will need to clone this repo and install its dependencies via terminal/command prompt.
+To use this app, you will need to clone this repo. Once you have done this, you'll need to install its dependencies via terminal/command prompt.
 
 `npm install`
 
