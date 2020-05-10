@@ -22,7 +22,11 @@ To use this app, you will need to clone this repo and install its dependancies.
 Then run the app
 `node app.js`
 
-Note that you will need to authenticate into your MFR275r from your web browser in order for the script to access usage information. You can do this by opening a web browser and logging in at the IP of your router through its web interface. 
+Note that you will need to authenticate into your MFR275r from your web browser in order for the script to access usage information. You can do this by opening a web browser and logging in at the IP of your router through its web interface. You will stay authenticated as long as the app keeps running.
+
+You then see your data use statistics from a web browser or device on the same lan. 
+![Screenshot of Rocket Hub Turbo Hub Data Monitoring App](https://i.ibb.co/3FT1Gq6/image.png)
+
 
 Before running the app, you will want to make adjustments to some variables.
 
