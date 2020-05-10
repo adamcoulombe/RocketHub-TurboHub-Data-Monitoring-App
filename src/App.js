@@ -12,23 +12,27 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = { 
-      entries: [],
+      currentData: [],
+      resetsData:[],
       range:'today',
       currentScroll:0,
       currentUsage:'',
       todayUsage:'',
-      options: {
-        chart: {
-          id: 'data-usage'
+      mainChart:{
+        options: {
+          chart: {
+            id: 'data-usage'
+          },
+          xaxis: {
+            categories: []
+          }
         },
-        xaxis: {
-          categories: []
-        }
+        series: [{
+          name: 'usage',
+          data: []
+        }],
       },
-      series: [{
-        name: 'usage',
-        data: []
-      }],
+
       dataLabels: {
         enabled: false,
       },
@@ -38,7 +42,7 @@ class App extends React.Component {
   }
 
   componentWillMount() {
-      this.getEntries();
+      this.getData();
   }
   componentDidMount(){
     $(window).on('scroll', (e)=>{
@@ -50,18 +54,36 @@ class App extends React.Component {
         
         window.location.reload();
       }
-    })
+    });
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+      $('html').addClass('is-pwa');
+    }
+    if ("ontouchstart" in document.documentElement) { 
+      $('html').addClass('is-touch');
+    }else{
+      $('html').addClass('no-touch');
+    }
   }
-  getEntries() {
-    fetch("http://"+window.location.hostname+":3901/api/all?timestamp="+ moment().valueOf())
-        .then(res => res.text())
-        .then(
-          (res) => {
-            const resData = JSON.parse(res);
-            this.setState({ entries: resData }, this.updateChartData.bind(this))
-     
-          } 
-        );
+  getData() {
+  
+    Promise.all([
+      fetch("http://"+window.location.hostname+":3901/api/current?timestamp="+ moment().valueOf()),
+      fetch("http://"+window.location.hostname+":3901/api/previous?timestamp="+ moment().valueOf()),
+      fetch("http://"+window.location.hostname+":3901/api/resets?timestamp="+ moment().valueOf()),
+    ]).then(([currentData, previousData, resetsData]) => {
+      Promise.all([currentData.text(),previousData.text(),resetsData.text()]).then(([currentDataText,previousDataText,resetsDataText])=>{
+        this.setState({ 
+          currentData: JSON.parse(currentDataText),
+          previousData: JSON.parse(previousDataText),
+          resetsData: JSON.parse(resetsDataText)
+        },
+      this.updateChartData.bind(this))
+      })
+
+
+    }).catch((err) => {
+        console.log(err);
+    });
   }
   updateChartData(){
     let periodStartTime;
@@ -78,42 +100,65 @@ class App extends React.Component {
     // console.log(moment().format("dddd, MMMM Do YYYY, h:mm:ss a"));
     
     const todayStartTime=moment().startOf('day');
-    const todayDataPartition = _.partition(this.state.entries, function(o) { 
+    const todayDataPartition = _.partition(this.state.currentData, function(o) { 
+      console.log(moment(o.time).isBefore(todayStartTime));
       return moment(o.time).isBefore(todayStartTime);
     });
+    console.log(todayDataPartition);
     const prevTodayData = todayDataPartition[0];
     const todayData = todayDataPartition[1];    
 
-    const periodData = _.partition(this.state.entries, function(o) { 
-      return moment(o.time).isBefore(periodStartTime);
+  
+    const prevPeriodData = this.state.previousData;
+    const resetsData = this.state.resetsData;
+    const currentPeriodResets = _.filter(resetsData, function(o) { 
+      return moment(o.time).isAfter(periodStartTime);
     });
-    const prevPeriodData = periodData[0];
-    const currentPeriodData = periodData[1];
+
+    const currentPeriodData = this.state.currentData.map( function(o){
+      if(!o.dataCorrected){
+        _.each(currentPeriodResets,(reset)=>{
+          if(moment(o.time).isAfter(reset.time)){
+            const oUsageValue = parseFloat(o.usage);
+            const resetUsageValue = parseFloat(reset.usage);
+            o.usage =  (oUsageValue+resetUsageValue).toFixed(2) + 'GB';
+          }
+        });
+      }
+      o.dataCorrected = true;
+      return o;      
+    });
     // console.log(prevPeriodData);
     let dataSet = currentPeriodData;
     if(this.state.range=='last-hour'){
-      dataSet = _.filter(this.state.entries, function(o) { 
+      dataSet = _.filter(this.state.currentData, function(o) { 
         return moment(o.time).isSameOrAfter(moment().subtract(1,'hour'));
       });
     }else if(this.state.range=='all'){
-      dataSet = this.state.entries;
+      dataSet = this.state.currentData;
     }else if(this.state.range=='today'){
       dataSet = todayData;
     }
 
     //console.log(dataSet);
-    const lastUsagePrevToday = parseFloat(_.last(prevTodayData).usage);
     const lastUsagePrevPeriod = parseFloat(_.last(prevPeriodData).usage);
-    const currentUsageThisPeriod = (parseFloat(_.last(this.state.entries).usage)-lastUsagePrevPeriod).toFixed(2);
+    const lastUsagePrevToday = prevTodayData.length>0 ? parseFloat(_.last(prevTodayData).usage) : lastUsagePrevPeriod;
+    const currentUsageThisPeriod = (parseFloat(_.last(this.state.currentData).usage)-lastUsagePrevPeriod).toFixed(2);
     const remainingDataThisPeriod = 200-currentUsageThisPeriod;
     const remainingDailyDataThisPeriod = (remainingDataThisPeriod/daysUntilPeriodEnd).toFixed(2);
-    const currentUsageToday = (parseFloat(_.last(this.state.entries).usage)-lastUsagePrevToday).toFixed(2);
+    const currentUsageToday = (parseFloat(_.last(this.state.currentData).usage)-lastUsagePrevToday).toFixed(2);
     const timeData = _.map(dataSet, 'time')
     const usageData = _.map(dataSet, 'usage')
     const usageSeries = usageData.map((v)=>{
       return (parseFloat(v)-lastUsagePrevPeriod).toFixed(2)
     })
-    let gaugeColorMap = interpolate(['#33e9ab','#67b244', '#E0B336','#fd9a2d', '#fd5f76']);
+    let gaugeColorMap = interpolate([
+      '#33e9ab','#33e9ab','#33e9ab',
+      '#67b244','#67b244','#67b244',
+      '#E0B336','#E0B336','#E0B336',
+      '#fd9a2d','#fd9a2d','#fd9a2d',
+      '#fd5f76','#fd5f76','#fd5f76',
+    ]);
     const timeLabels = timeData.map((v)=>{
       return moment(v).format("dd M, h:mmA");
     })
@@ -121,21 +166,24 @@ class App extends React.Component {
       currentUsage:currentUsageThisPeriod,
       todayUsage:currentUsageToday,
       remainingDailyDataThisPeriod:remainingDailyDataThisPeriod,
-      options:{
-        chart: {
-          id: 'data-usage'
+      mainChart:{
+        options:{
+          chart: {
+            id: 'data-usage'
+          },
+          xaxis: {
+            categories: timeLabels
+          },
+          dataLabels: {
+            enabled: false,
+          }
         },
-        xaxis: {
-          categories: timeLabels
-        },
-        dataLabels: {
-          enabled: false,
-        }
+        series:[{
+          name: 'usage',
+          data: usageSeries
+        }],
       },
-      series:[{
-        name: 'usage',
-        data: usageSeries
-      }],
+
 
           
       todayGaugeSeries: [currentUsageToday/remainingDailyDataThisPeriod*100],
@@ -211,16 +259,18 @@ class App extends React.Component {
           <div 
             className={['chart-panel',`range-${this.state.range}`].join(' ')}
           >
-            <nav id="nav">
-              <div className="nav-inner">
-                <a className="nav-item nav-item-today" onClick={this.setRange.bind(this,'today')}>Today</a>
-                <a className="nav-item nav-item-current-period" onClick={this.setRange.bind(this,'current-period')}>This Month</a>
-                <a className="nav-item nav-item-last-hour" onClick={this.setRange.bind(this,'last-hour')}>Last Hour</a>
-                <a className="nav-item nav-item-all" onClick={this.setRange.bind(this,'all')}>All</a>
-              </div>
-            </nav>
-            <Chart options={this.state.options} toolbar={this.state.toolbar} series={this.state.series} type="area" height="300" />
+            <div className="nav-wrap">
+              <nav id="nav">
+                <div className="nav-inner">
+                  <a className="nav-item nav-item-today" onClick={this.setRange.bind(this,'today')}>Today</a>
+                  <a className="nav-item nav-item-current-period" onClick={this.setRange.bind(this,'current-period')}>This Month</a>
+                  <a className="nav-item nav-item-last-hour" onClick={this.setRange.bind(this,'last-hour')}>Last Hour</a>
+                  <a className="nav-item nav-item-all" onClick={this.setRange.bind(this,'all')}>All</a>
+                </div>
+              </nav>              
+            </div>
 
+            <Chart options={this.state.mainChart.options} toolbar={this.state.toolbar} series={this.state.mainChart.series} type="area" height="300" />
           </div>
         </div>
       </div>
@@ -229,3 +279,4 @@ class App extends React.Component {
 }
 
 export default App;
+
