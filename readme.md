@@ -1,6 +1,9 @@
 # Data Monitoring App for Rocket Hub / Turbo Hub
 ## A locally-hosted webapp for checking your data usage on the ZTE MFR275R / MFR275T
 
+### Foreword.
+This app is a work in progress. I built it for my own necessity, but I think there are others out there who can use this too. Currently, this app wont work out of the box without some tweaking for your own needs, so some javascript knowledge will be required to get set up.
+
 ### Why
 The ZTE MFR275R has an admin console accessible via web browser that is able to display some basic data usage statistics. Unfortunately it is very limited and doesn't contain historical usage data. It is also not coordinated in any way with billing dates/reset periods from your ISP which makes it very inconvenient to use and difficult to accurately interpret.
 
@@ -24,7 +27,7 @@ Then run the app
 
 Note that you will need to authenticate into your MFR275r from your web browser in order for the script to access usage information. You can do this by opening a web browser and logging in at the IP of your router through its web interface. You will stay authenticated as long as the app keeps running.
 
-You then see your data use statistics from a web browser or device on the same lan. 
+You then see your data use statistics from a web browser or device on the same lan. By default, the app runs on port 3901
 ![Screenshot of Rocket Hub Turbo Hub Data Monitoring App](https://i.ibb.co/3FT1Gq6/image.png)
 
 
