@@ -19,10 +19,12 @@ When you first run the script, you will need to also log in to your MFR275R usin
 The script will log data usage over time and allow you to view charts and information about your daily data usage and how much data you have remaining in your current billing period.
 
 ## Getting started
-To use this app, you will need to clone this repo and install its dependencies.
+To use this app, you will need to clone this repo and install its dependencies via terminal/command prompt.
+
 `npm install`
 
 Then run the app
+
 `node app.js`
 
 Note that you will need to authenticate into your MFR275r from your web browser in order for the script to access usage information. You can do this by opening a web browser and logging in at the IP of your router through its web interface. You will stay authenticated as long as the app keeps running.
