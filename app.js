@@ -132,15 +132,17 @@ async function getUsage() {
         console.log('last entry was at '+lastEntryMoment.format("dddd, MMMM Do YYYY, h:mm:ss a"));
         if(moment().isAfter(lastEntryMoment.add(7,'minutes') )){
             let totalUsageFloat = parseFloat(totalUsage);
-            let prevEntry = db.get('entries').last().value();
-            let prevUsageFloat = parseFloat(prevEntry.usage);
-            db.get('entries')
-            .push({ time: new Date().getTime(), usage: totalUsage })
-            .write()
-            if(totalUsageFloat<prevUsageFloat){
-              db.get('resets')
-              .push(prevEntry)
-              .write()            
+            if(totalUsageFloat>0){
+              let prevEntry = db.get('entries').last().value();
+              let prevUsageFloat = parseFloat(prevEntry.usage);
+              db.get('entries')
+              .push({ time: new Date().getTime(), usage: totalUsage })
+              .write()
+              if(totalUsageFloat<prevUsageFloat){
+                db.get('resets')
+                .push(prevEntry)
+                .write()            
+              }
             }
            // console.log('logging usage: '+totalUsage);
         }else{
