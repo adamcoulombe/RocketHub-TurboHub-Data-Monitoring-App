@@ -22,7 +22,7 @@
     "lowdb": "^1.0.0",
     "mobile-pull-to-refresh": "^0.2.2",
     "moment": "^2.24.0",
-    "node-sass": "^4.13.1",
+    "node-sass": "^7.0.0",
     "phantom": "^6.3.0",
     "phantomjs": "^2.1.7",
     "pulltorefreshjs": "^0.1.20",
